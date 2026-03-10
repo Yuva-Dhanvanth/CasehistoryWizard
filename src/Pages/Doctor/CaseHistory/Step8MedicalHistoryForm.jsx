@@ -1,6 +1,6 @@
 import React from "react";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 export default function Step8MedicalHistoryForm({ formData, updateFormData, selectedChild }) {
   const data = formData.medicalHistory || {
@@ -51,7 +51,7 @@ export default function Step8MedicalHistoryForm({ formData, updateFormData, sele
         member.note || "-"
       ]);
 
-      doc.autoTable({
+      autoTable(doc, {
         startY: startY,
         head: [["#", "Symbol (Type)", "Notes"]],
         body: pedigreeBody,
