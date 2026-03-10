@@ -11,8 +11,9 @@ import Step2DocumentsChecklist from "./Step2DocumentsChecklist";
 import Step3IncreasingBehaviour from "./Step3IncreasingBehaviour";
 import Step4DecreasingBehaviour from "./Step4DecreasingBehaviour";
 import Step5TrialExamination from "./Step5TrialExamination";
-import Step6VisualShapes from "./Step6VisualShapes";
+import Step6ScreeningDrawingTest from "./Step6ScreeningDrawingTest";
 import Step7AssessmentNotes from "./Step7AssessmentNotes";
+import Step8MedicalHistoryForm from "./Step8MedicalHistoryForm";
 
 const STEPS = [
   { label: "Child Demographics", shortLabel: "Demographics", component: Step1Demographics },
@@ -20,8 +21,9 @@ const STEPS = [
   { label: "Increasing Behaviour", shortLabel: "IBP+", component: Step3IncreasingBehaviour },
   { label: "Decreasing Behaviour", shortLabel: "IBP−", component: Step4DecreasingBehaviour },
   { label: "Trial Examination", shortLabel: "Trials", component: Step5TrialExamination },
-  { label: "Visual Shapes Task", shortLabel: "Shapes", component: Step6VisualShapes },
+  { label: "Screening Drawing Test", shortLabel: "Screening Test", component: Step6ScreeningDrawingTest },
   { label: "Assessment Notes", shortLabel: "Assessment", component: Step7AssessmentNotes },
+  { label: "Medical History", shortLabel: "Medical History", component: Step8MedicalHistoryForm },
 ];
 
 const initialFormData = {
@@ -105,7 +107,7 @@ const initialFormData = {
     percentage: 0,
   },
 
-  // Step 6 – Visual Shapes Task
+  // Step 6 – Screening Drawing Test (previously Visual Shapes Task)
   visualShapes: {
     childName: "",
     date: "",
@@ -119,6 +121,14 @@ const initialFormData = {
     therapistNotes: "",
     observationNotes: "",
     assessmentDate: "",
+  },
+
+  // Step 8 - Medical History
+  medicalHistory: {
+    pedigreeMembers: [],
+    prenatalHistory: "",
+    natalHistory: "",
+    postnatalHistory: "",
   },
 };
 
@@ -306,6 +316,7 @@ export default function CaseHistoryWizard() {
       trialExamination: history.trialExamination || initialFormData.trialExamination,
       visualShapes: history.visualShapes || initialFormData.visualShapes,
       assessmentNotes: history.assessmentNotes || initialFormData.assessmentNotes,
+      medicalHistory: history.medicalHistory || initialFormData.medicalHistory,
     });
 
     // Reset to step 1
@@ -653,6 +664,7 @@ export default function CaseHistoryWizard() {
         trialExamination: formData.trialExamination,
         visualShapes: formData.visualShapes,
         assessmentNotes: formData.assessmentNotes,
+        medicalHistory: formData.medicalHistory,
       };
 
       await axios.post("/api/case-history", payload, {
