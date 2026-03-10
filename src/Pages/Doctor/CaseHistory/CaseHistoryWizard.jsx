@@ -178,7 +178,7 @@ export default function CaseHistoryWizard() {
               name: "Rahul",
               dob: "2018-05-12T00:00:00.000Z",
               gender: "Male",
-              therapistId: { name: "Dr. Mock" },
+              therapistId: { name: "Tejesh" },
               centreId: { name: "Test Centre" },
             },
             {
@@ -186,7 +186,7 @@ export default function CaseHistoryWizard() {
               name: "Riya",
               dob: "2020-11-20T00:00:00.000Z",
               gender: "Female",
-              therapistId: { name: "Dr. Mock" },
+              therapistId: { name: "Tejesh" },
               centreId: { name: "Test Centre" },
             }
           ];
@@ -213,7 +213,7 @@ export default function CaseHistoryWizard() {
             name: "Rahul",
             dob: "2018-05-12T00:00:00.000Z",
             gender: "Male",
-            therapistId: { name: "Dr. Mock" },
+            therapistId: { name: "Tejesh" },
             centreId: { name: "Test Centre" },
           }
         ];
