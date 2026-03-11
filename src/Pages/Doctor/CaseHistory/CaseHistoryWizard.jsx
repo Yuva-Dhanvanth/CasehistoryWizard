@@ -125,8 +125,6 @@ const initialFormData = {
 
   // Step 8 - Medical History
   medicalHistory: {
-    pedigreeMembers: [],
-    parentsBloodRelatives: "Unknown",
     prenatalHistory: "",
     natalHistory: "",
     postnatalHistory: "",
