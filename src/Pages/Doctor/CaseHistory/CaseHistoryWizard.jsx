@@ -729,12 +729,14 @@ export default function CaseHistoryWizard() {
           <h1 className="text-2xl sm:text-3xl font-bold text-[#ab1c1c]">
             Case History
           </h1>
+          {/* Close button hidden for now — key preserved for future use
           <button
             onClick={handleCancel}
             className="text-gray-600 hover:text-gray-800 border border-gray-300 px-4 py-2 rounded-lg transition-colors"
           >
             ✕ Close
           </button>
+          */}
         </div>
 
         {/* ========== CHILD SELECTOR ========== */}
