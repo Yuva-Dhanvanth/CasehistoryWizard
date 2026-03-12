@@ -3,6 +3,7 @@ import DrawingCanvas from "./DrawingCanvas";
 
 export default function Step8MedicalHistoryForm({ formData, updateFormData, selectedChild }) {
   const data = formData.medicalHistory || {
+    generalHistory: "",
     prenatalHistory: "",
     natalHistory: "",
     postnatalHistory: "",
@@ -32,29 +33,49 @@ export default function Step8MedicalHistoryForm({ formData, updateFormData, sele
     setSavedDrawings((prev) => ({ ...prev, [key]: paths }));
   }, []);
 
-  // Print all diagrams in a new window
+  // Print all diagrams with clinician notes in a new window
   const handlePrintDiagrams = async () => {
-    const canvasRefs = [
-      { ref: generalCanvasRef, label: "General Family Diagram", show: showGeneralCanvas },
-      { ref: prenatalCanvasRef, label: "Pre-natal Diagram", show: showPrenatalCanvas },
-      { ref: natalCanvasRef, label: "Natal Diagram", show: showNatalCanvas },
-      { ref: postnatalCanvasRef, label: "Post-natal Diagram", show: showPostnatalCanvas },
+    const sections = [
+      {
+        key: "general",
+        sectionTitle: "General History",
+        noteField: "generalHistory",
+        diagramLabel: "General Family Diagram",
+        ref: generalCanvasRef,
+        show: showGeneralCanvas,
+      },
+      {
+        key: "prenatal",
+        sectionTitle: "Pre-natal History",
+        noteField: "prenatalHistory",
+        diagramLabel: "Pre-natal Diagram",
+        ref: prenatalCanvasRef,
+        show: showPrenatalCanvas,
+      },
+      {
+        key: "natal",
+        sectionTitle: "Natal History",
+        noteField: "natalHistory",
+        diagramLabel: "Natal Diagram",
+        ref: natalCanvasRef,
+        show: showNatalCanvas,
+      },
+      {
+        key: "postnatal",
+        sectionTitle: "Post-natal History",
+        noteField: "postnatalHistory",
+        diagramLabel: "Post-natal Diagram",
+        ref: postnatalCanvasRef,
+        show: showPostnatalCanvas,
+      },
     ];
 
-    const images = [];
-    for (const { ref, label, show } of canvasRefs) {
-      if (show && ref.current) {
-        try {
-          const dataUrl = await ref.current.getImage();
-          if (dataUrl) images.push({ label, dataUrl });
-        } catch {
-          // skip
-        }
-      }
-    }
-
-    if (images.length === 0) {
-      alert("No diagrams to print. Please draw at least one diagram first.");
+    // Check if there is any content at all
+    const hasAnyContent = sections.some(
+      (s) => data[s.noteField]?.trim() || (s.show && s.ref.current)
+    );
+    if (!hasAnyContent) {
+      alert("No content to print. Please add notes or draw at least one diagram first.");
       return;
     }
 
@@ -67,22 +88,55 @@ export default function Step8MedicalHistoryForm({ formData, updateFormData, sele
       return;
     }
 
-    const imagesHtml = images.map(({ label, dataUrl }) => `
-      <div style="page-break-inside: avoid; margin-bottom: 40px;">
-        <h2 style="color: #ab1c1c; font-size: 18px; margin-bottom: 12px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">${label}</h2>
-        <img src="${dataUrl}" style="max-width: 100%; border: 1px solid #d1d5db; border-radius: 4px;" />
-      </div>
-    `).join("");
+    // Build HTML for each section
+    let sectionsHtml = "";
+    for (const section of sections) {
+      const noteText = data[section.noteField]?.trim() || "";
+      let diagramImgHtml = "";
+
+      if (section.show && section.ref.current) {
+        try {
+          const dataUrl = await section.ref.current.getImage();
+          if (dataUrl) {
+            diagramImgHtml = `
+              <div style="margin-top: 12px;">
+                <h3 style="color: #555; font-size: 15px; margin-bottom: 8px; font-weight: 600;">${section.diagramLabel}</h3>
+                <img src="${dataUrl}" style="max-width: 100%; border: 1px solid #d1d5db; border-radius: 4px;" />
+              </div>
+            `;
+          }
+        } catch {
+          // skip
+        }
+      }
+
+      // Only include the section if it has notes or a diagram
+      if (noteText || diagramImgHtml) {
+        const noteHtml = noteText
+          ? `<div style="margin-top: 8px; padding: 12px 16px; background: #f9fafb; border-left: 4px solid #ab1c1c; border-radius: 4px; font-size: 14px; line-height: 1.6; color: #333; white-space: pre-wrap;">${noteText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`
+          : `<p style="color: #999; font-style: italic; font-size: 13px; margin-top: 8px;">No notes recorded.</p>`;
+
+        sectionsHtml += `
+          <div style="page-break-inside: avoid; margin-bottom: 36px;">
+            <h2 style="color: #ab1c1c; font-size: 18px; margin-bottom: 4px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">${section.sectionTitle}</h2>
+            <p style="color: #666; font-size: 13px; margin: 0 0 4px; font-weight: 600;">Clinician\'s Notes:</p>
+            ${noteHtml}
+            ${diagramImgHtml}
+          </div>
+        `;
+      }
+    }
 
     printWindow.document.write(`
       <html>
         <head>
-          <title>Medical History Diagrams - ${childName}</title>
+          <title>Medical History - ${childName}</title>
           <style>
             @media print {
               body { margin: 0; padding: 20px; }
               .no-print { display: none !important; }
-              img { max-height: 80vh; object-fit: contain; }
+              img { max-width: 100%; height: auto; object-fit: contain; page-break-inside: avoid; }
+              div { page-break-inside: avoid; }
             }
             body {
               font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -95,10 +149,10 @@ export default function Step8MedicalHistoryForm({ formData, updateFormData, sele
         </head>
         <body>
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #ab1c1c; font-size: 24px; margin: 0;">Medical History Diagrams</h1>
+            <h1 style="color: #ab1c1c; font-size: 24px; margin: 0;">Medical History</h1>
             <p style="color: #666; margin: 8px 0 0;">Child: <strong>${childName}</strong> &nbsp;|&nbsp; Date: ${dateStr}</p>
           </div>
-          ${imagesHtml}
+          ${sectionsHtml}
           <script>
             window.onload = () => {
               setTimeout(() => {
@@ -137,34 +191,48 @@ export default function Step8MedicalHistoryForm({ formData, updateFormData, sele
         </button>
       </div>
 
-      {/* ========== General Family Diagram ========== */}
+      {/* ========== General History ========== */}
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <div className="flex justify-between items-center mb-3 border-b pb-2">
-          <div>
-            <h3 className="text-lg font-medium text-gray-800">General Family Diagram</h3>
-            <p className="text-sm text-gray-500">Draw a freehand family / pedigree diagram.</p>
+        <label className="block text-sm font-medium text-gray-700 mb-1">General History</label>
+        <p className="text-xs text-gray-500 mb-2">General observations, family background, and relevant notes.</p>
+        <textarea
+          name="generalHistory"
+          value={data.generalHistory || ""}
+          onChange={handleChange}
+          rows="4"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#ab1c1c] focus:outline-none bg-white"
+          placeholder="Enter general history notes here..."
+        ></textarea>
+
+        {/* General Family Diagram */}
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="flex justify-between items-center mb-3">
+            <div>
+              <h4 className="text-md font-medium text-gray-700">General Family Diagram</h4>
+              <p className="text-xs text-gray-500">Draw a freehand family / pedigree diagram.</p>
+            </div>
+            <button
+              onClick={() => setShowGeneralCanvas((v) => !v)}
+              className={`px-4 py-2 font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm ${
+                showGeneralCanvas
+                  ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-[#ab1c1c] text-white hover:bg-[#8e1818]"
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+              {showGeneralCanvas ? "Hide Canvas" : "Draw Diagram"}
+            </button>
           </div>
-          <button
-            onClick={() => setShowGeneralCanvas((v) => !v)}
-            className={`px-4 py-2 font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-2 text-sm ${
-              showGeneralCanvas
-                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                : "bg-[#ab1c1c] text-white hover:bg-[#8e1818]"
-            }`}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-            {showGeneralCanvas ? "Hide Canvas" : "Draw Diagram"}
-          </button>
+          {showGeneralCanvas && (
+            <DrawingCanvas
+              ref={generalCanvasRef}
+              title="General Family Diagram"
+              onSave={(paths) => handleSaveDrawing("general", paths)}
+            />
+          )}
         </div>
-        {showGeneralCanvas && (
-          <DrawingCanvas
-            ref={generalCanvasRef}
-            title="General Family Diagram"
-            onSave={(paths) => handleSaveDrawing("general", paths)}
-          />
-        )}
       </div>
 
       {/* Pre-natal History */}

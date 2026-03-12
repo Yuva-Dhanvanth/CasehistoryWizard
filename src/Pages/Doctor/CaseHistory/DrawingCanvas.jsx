@@ -8,12 +8,78 @@ const DrawingCanvas = forwardRef(({ title, onSave }, ref) => {
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [hasDrawing, setHasDrawing] = useState(false);
 
+  // Helper: crop a data URL image to its drawn content bounding box
+  const cropToContent = (dataUrl) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const { data, width, height } = imageData;
+
+        // Find bounding box of non-white pixels
+        let top = height, left = width, bottom = 0, right = 0;
+        let hasContent = false;
+
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const i = (y * width + x) * 4;
+            const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
+            // Check if pixel is NOT white/transparent
+            if (a > 10 && (r < 245 || g < 245 || b < 245)) {
+              hasContent = true;
+              if (y < top) top = y;
+              if (y > bottom) bottom = y;
+              if (x < left) left = x;
+              if (x > right) right = x;
+            }
+          }
+        }
+
+        if (!hasContent) {
+          resolve(null); // nothing drawn
+          return;
+        }
+
+        // Add padding around the cropped area
+        const padding = 20;
+        top = Math.max(0, top - padding);
+        left = Math.max(0, left - padding);
+        bottom = Math.min(height - 1, bottom + padding);
+        right = Math.min(width - 1, right + padding);
+
+        const cropWidth = right - left + 1;
+        const cropHeight = bottom - top + 1;
+
+        const croppedCanvas = document.createElement("canvas");
+        croppedCanvas.width = cropWidth;
+        croppedCanvas.height = cropHeight;
+        const croppedCtx = croppedCanvas.getContext("2d");
+        // Fill with white background
+        croppedCtx.fillStyle = "#ffffff";
+        croppedCtx.fillRect(0, 0, cropWidth, cropHeight);
+        croppedCtx.drawImage(canvas, left, top, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+        resolve(croppedCanvas.toDataURL("image/png"));
+      };
+      img.onerror = () => resolve(null);
+      img.src = dataUrl;
+    });
+  };
+
   // Expose getImage method to parent
   useImperativeHandle(ref, () => ({
     getImage: async () => {
       try {
         const dataUrl = await canvasRef.current.exportImage("png");
-        return dataUrl;
+        // Crop to only the drawn content
+        const cropped = await cropToContent(dataUrl);
+        return cropped;
       } catch {
         return null;
       }
@@ -205,29 +271,40 @@ const DrawingCanvas = forwardRef(({ title, onSave }, ref) => {
         </div>
       </div>
 
-      {/* Canvas */}
-      <div className="relative" style={{ height: 600 }}>
-        <ReactSketchCanvas
-          ref={canvasRef}
-          width="100%"
-          height="600px"
-          strokeWidth={strokeWidth}
-          strokeColor={strokeColor}
-          eraserWidth={strokeWidth * 4}
-          canvasColor="#ffffff"
-          style={{
-            border: "none",
-            borderRadius: 0,
-          }}
-          onStroke={handleStroke}
-        />
-        {!hasDrawing && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <p className="text-gray-300 text-lg font-medium select-none">
-              Draw your {title} here...
-            </p>
-          </div>
-        )}
+      {/* Scrollable Canvas Viewport */}
+      <div
+        style={{
+          maxHeight: 500,
+          overflowY: "auto",
+          overflowX: "hidden",
+          border: "1px solid #e5e7eb",
+          borderTop: "none",
+          position: "relative",
+        }}
+      >
+        <div className="relative" style={{ height: 2000, minWidth: "100%" }}>
+          <ReactSketchCanvas
+            ref={canvasRef}
+            width="100%"
+            height="2000px"
+            strokeWidth={strokeWidth}
+            strokeColor={strokeColor}
+            eraserWidth={strokeWidth * 4}
+            canvasColor="#ffffff"
+            style={{
+              border: "none",
+              borderRadius: 0,
+            }}
+            onStroke={handleStroke}
+          />
+          {!hasDrawing && (
+            <div className="absolute inset-x-0 top-0 flex justify-center pointer-events-none" style={{ paddingTop: 200 }}>
+              <p className="text-gray-300 text-lg font-medium select-none">
+                Scroll down to draw larger diagrams — Draw your {title} here...
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
