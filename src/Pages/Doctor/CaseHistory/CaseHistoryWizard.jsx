@@ -23,7 +23,7 @@ const STEPS = [
   { label: "Trial Examination", shortLabel: "Trials", component: Step5TrialExamination },
   { label: "Screening Drawing Test", shortLabel: "Screening Test", component: Step6ScreeningDrawingTest },
   { label: "Assessment Notes", shortLabel: "Assessment", component: Step7AssessmentNotes },
-  { label: "Medical History", shortLabel: "Medical History", component: Step8MedicalHistoryForm },
+  { label: "Demographic Details", shortLabel: "Demographic Details", component: Step8MedicalHistoryForm },
 ];
 
 const initialFormData = {
@@ -123,7 +123,7 @@ const initialFormData = {
     assessmentDate: "",
   },
 
-  // Step 8 - Medical History
+  // Step 8 - Demographic Details
   medicalHistory: {
     prenatalHistory: "",
     natalHistory: "",

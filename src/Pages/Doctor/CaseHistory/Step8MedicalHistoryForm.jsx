@@ -130,7 +130,7 @@ export default function Step8MedicalHistoryForm({ formData, updateFormData, sele
     printWindow.document.write(`
       <html>
         <head>
-          <title>Medical History - ${childName}</title>
+          <title>Demographic Details - ${childName}</title>
           <style>
             @media print {
               body { margin: 0; padding: 20px; }
@@ -149,7 +149,7 @@ export default function Step8MedicalHistoryForm({ formData, updateFormData, sele
         </head>
         <body>
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #ab1c1c; font-size: 24px; margin: 0;">Medical History</h1>
+            <h1 style="color: #ab1c1c; font-size: 24px; margin: 0;">Demographic Details</h1>
             <p style="color: #666; margin: 8px 0 0;">Child: <strong>${childName}</strong> &nbsp;|&nbsp; Date: ${dateStr}</p>
           </div>
           ${sectionsHtml}
@@ -177,7 +177,7 @@ export default function Step8MedicalHistoryForm({ formData, updateFormData, sele
     <div className="space-y-8">
       <div className="flex flex-wrap justify-between items-start gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-gray-800">Step 8: Medical History Form</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Step 8: Demographic Details</h2>
           <p className="text-sm text-gray-500">Record developmental and family history.</p>
         </div>
         <button
