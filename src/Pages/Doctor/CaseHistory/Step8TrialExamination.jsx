@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function Step5TrialExamination({ formData, updateFormData }) {
+export default function Step8TrialExamination({ formData, updateFormData }) {
   const data = formData.trialExamination;
 
   const handleFieldChange = (field, value) => {

@@ -2,7 +2,7 @@ import React from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-export default function Step6ScreeningDrawingTest({ formData, selectedChild }) {
+export default function Step3ScreeningDrawingTest({ formData, selectedChild }) {
   const handlePrint = () => {
     const doc = new jsPDF("p", "pt", "a4");
     const pageWidth = doc.internal.pageSize.getWidth();

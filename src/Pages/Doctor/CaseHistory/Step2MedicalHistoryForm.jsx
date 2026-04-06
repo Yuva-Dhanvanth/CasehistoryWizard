@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import DrawingCanvas from "./DrawingCanvas";
 
-export default function Step8MedicalHistoryForm({ formData, updateFormData, selectedChild }) {
+export default function Step2MedicalHistoryForm({ formData, updateFormData, selectedChild }) {
   const data = formData.medicalHistory || {
     generalHistory: "",
     prenatalHistory: "",

@@ -1,4 +1,4 @@
-export default function Step7AssessmentNotes({ formData, updateFormData }) {
+export default function Step4AssessmentNotes({ formData, updateFormData }) {
   const data = formData.assessmentNotes;
 
   const handleFieldChange = (field, value) => {

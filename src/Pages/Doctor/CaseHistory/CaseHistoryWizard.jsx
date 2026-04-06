@@ -7,23 +7,23 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 import Step1Demographics from "./Step1Demographics";
-import Step2DocumentsChecklist from "./Step2DocumentsChecklist";
-import Step3IncreasingBehaviour from "./Step3IncreasingBehaviour";
-import Step4DecreasingBehaviour from "./Step4DecreasingBehaviour";
-import Step5TrialExamination from "./Step5TrialExamination";
-import Step6ScreeningDrawingTest from "./Step6ScreeningDrawingTest";
-import Step7AssessmentNotes from "./Step7AssessmentNotes";
-import Step8MedicalHistoryForm from "./Step8MedicalHistoryForm";
+import Step2MedicalHistoryForm from "./Step2MedicalHistoryForm";
+import Step3ScreeningDrawingTest from "./Step3ScreeningDrawingTest";
+import Step4AssessmentNotes from "./Step4AssessmentNotes";
+import Step5DocumentsChecklist from "./Step5DocumentsChecklist";
+import Step6IncreasingBehaviour from "./Step6IncreasingBehaviour";
+import Step7DecreasingBehaviour from "./Step7DecreasingBehaviour";
+import Step8TrialExamination from "./Step8TrialExamination";
 
 const STEPS = [
   { label: "Child Demographics", shortLabel: "Demographics", component: Step1Demographics },
-  { label: "Documents Checklist", shortLabel: "Documents", component: Step2DocumentsChecklist },
-  { label: "Increasing Behaviour", shortLabel: "IBP+", component: Step3IncreasingBehaviour },
-  { label: "Decreasing Behaviour", shortLabel: "IBP−", component: Step4DecreasingBehaviour },
-  { label: "Trial Examination", shortLabel: "Trials", component: Step5TrialExamination },
-  { label: "Screening Drawing Test", shortLabel: "Screening Test", component: Step6ScreeningDrawingTest },
-  { label: "Assessment Notes", shortLabel: "Assessment", component: Step7AssessmentNotes },
-  { label: "Demographic Details", shortLabel: "Demographic Details", component: Step8MedicalHistoryForm },
+  { label: "Demographic Details", shortLabel: "Demographic Details", component: Step2MedicalHistoryForm },
+  { label: "Screening Drawing Test", shortLabel: "Screening Test", component: Step3ScreeningDrawingTest },
+  { label: "Assessment Notes", shortLabel: "Assessment", component: Step4AssessmentNotes },
+  { label: "Documents Checklist", shortLabel: "Documents", component: Step5DocumentsChecklist },
+  { label: "Increasing Behaviour", shortLabel: "IBP+", component: Step6IncreasingBehaviour },
+  { label: "Decreasing Behaviour", shortLabel: "IBP−", component: Step7DecreasingBehaviour },
+  { label: "Trial Examination", shortLabel: "Trials", component: Step8TrialExamination },
 ];
 
 const initialFormData = {

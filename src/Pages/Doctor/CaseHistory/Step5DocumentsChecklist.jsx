@@ -1,4 +1,4 @@
-export default function Step2DocumentsChecklist({ formData, updateFormData }) {
+export default function Step5DocumentsChecklist({ formData, updateFormData }) {
   const handleCheckboxChange = (name) => {
     updateFormData(name, !formData[name]);
   };
